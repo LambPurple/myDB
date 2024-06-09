@@ -60,9 +60,7 @@ static const char* FLAGS_benchmarks =
     "fill100K,"
     "crc32c,"
     "snappycomp,"
-    "snappyuncomp,"
-    "zstdcomp,"
-    "zstduncomp,";
+    "snappyuncomp,";
 
 // Number of key/values to place in database
 static int FLAGS_num = 1000000;
@@ -125,9 +123,6 @@ static bool FLAGS_compression = true;
 
 // Use the db with the following name.
 static const char* FLAGS_db = nullptr;
-
-// ZSTD compression level to try out
-static int FLAGS_zstd_compression_level = 1;
 
 namespace mydb {
 
@@ -635,10 +630,6 @@ class Benchmark {
         method = &Benchmark::SnappyCompress;
       } else if (name == Slice("snappyuncomp")) {
         method = &Benchmark::SnappyUncompress;
-      } else if (name == Slice("zstdcomp")) {
-        method = &Benchmark::ZstdCompress;
-      } else if (name == Slice("zstduncomp")) {
-        method = &Benchmark::ZstdUncompress;
       } else if (name == Slice("heapprofile")) {
         HeapProfile();
       } else if (name == Slice("stats")) {
@@ -779,24 +770,6 @@ class Benchmark {
   void SnappyUncompress(ThreadState* thread) {
     Uncompress(thread, "snappy", &port::Snappy_Compress,
                &port::Snappy_Uncompress);
-  }
-
-  void ZstdCompress(ThreadState* thread) {
-    Compress(thread, "zstd",
-             [](const char* input, size_t length, std::string* output) {
-               return port::Zstd_Compress(FLAGS_zstd_compression_level, input,
-                                          length, output);
-             });
-  }
-
-  void ZstdUncompress(ThreadState* thread) {
-    Uncompress(
-        thread, "zstd",
-        [](const char* input, size_t length, std::string* output) {
-          return port::Zstd_Compress(FLAGS_zstd_compression_level, input,
-                                     length, output);
-        },
-        &port::Zstd_Uncompress);
   }
 
   void Open() {
