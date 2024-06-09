@@ -477,7 +477,7 @@ class Benchmark {
   }
 
   void PrintEnvironment() {
-    std::fprintf(stderr, "MyDB:    version %d.%d\n", kMajorVersion,
+    std::fprintf(stderr, "MyDB:       version %d.%d\n", kMajorVersion,
                  kMinorVersion);
 
 #if defined(__linux)
