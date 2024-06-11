@@ -2369,6 +2369,7 @@ TEST_F(DBTest, Randomized) {
 }
 
 TEST_F(DBTest, IntegrityCheck){
+  Put("aa","aaaaas");
   merkle::Tree merkleTree;
   auto CalculateHash = [](const Slice& key, const Slice& value) -> std::vector<uint8_t>{
     // 创建一个 SHA-256 哈希对象
@@ -2395,7 +2396,7 @@ TEST_F(DBTest, IntegrityCheck){
     merkle::HashT<32> keyValueHash(CalculateHash(s.first,s.second).data());
     merkleTree.insert(keyValueHash);
   }
-  merkle::Hash rootHash = merkleTree.root();
+  // merkle::Hash rootHash = merkleTree.root();
   // printf("%s",rootHash);
 }
 
