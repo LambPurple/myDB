@@ -9,11 +9,14 @@
 #include <atomic>
 #include <cinttypes>
 #include <string>
+#include <map>
+#include <openssl/sha.h>
 
 #include "mydb/cache.h"
 #include "mydb/env.h"
 #include "mydb/filter_policy.h"
 #include "mydb/table.h"
+#include "mydb/merklecpp.h"
 
 #include "port/port.h"
 #include "port/thread_annotations.h"
@@ -524,6 +527,14 @@ class DBTest : public testing::Test {
       result = iter->key().ToString() + "->" + iter->value().ToString();
     } else {
       result = "(invalid)";
+    }
+    return result;
+  }
+
+  std::pair<Slice,Slice> IterPairs(Iterator* iter){
+    std::pair<Slice,Slice> result;
+    if (iter->Valid()) {
+      result = {iter->key().ToString(),iter->value().ToString()};
     }
     return result;
   }
@@ -2355,6 +2366,37 @@ TEST_F(DBTest, Randomized) {
     if (model_snap != nullptr) model.ReleaseSnapshot(model_snap);
     if (db_snap != nullptr) db_->ReleaseSnapshot(db_snap);
   } while (ChangeOptions());
+}
+
+TEST_F(DBTest, IntegrityCheck){
+  merkle::Tree merkleTree;
+  auto CalculateHash = [](const Slice& key, const Slice& value) -> std::vector<uint8_t>{
+    // 创建一个 SHA-256 哈希对象
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+
+    // 对键进行哈希
+    SHA256_Update(&sha256, key.data(), key.size());
+
+    // 对值进行哈希
+    SHA256_Update(&sha256, value.data(), value.size());
+
+    // 准备存储最终哈希值的缓冲区
+    std::vector<uint8_t> hash(SHA256_DIGEST_LENGTH);
+    
+    // 获取最终的哈希值
+    SHA256_Final(hash.data(), &sha256);
+
+    return hash;
+  };
+  Iterator* iter = db_->NewIterator(ReadOptions());
+  for (iter->SeekToFirst(); iter->Valid(); iter->Next()) {
+    auto s = IterPairs(iter);
+    merkle::HashT<32> keyValueHash(CalculateHash(s.first,s.second).data());
+    merkleTree.insert(keyValueHash);
+  }
+  merkle::Hash rootHash = merkleTree.root();
+  // printf("%s",rootHash);
 }
 
 }  // namespace mydb
