@@ -1,6 +1,4 @@
-// Copyright (c) 2011 The MyDB Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file. See the AUTHORS file for names of contributors.
+
 //
 // Log format information shared by reader and writer.
 // See ../doc/log_format.md for more detail.

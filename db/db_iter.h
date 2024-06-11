@@ -1,6 +1,4 @@
-// Copyright (c) 2011 The MyDB Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file. See the AUTHORS file for names of contributors.
+
 
 #ifndef STORAGE_MYDB_DB_DB_ITER_H_
 #define STORAGE_MYDB_DB_DB_ITER_H_

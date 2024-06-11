@@ -1,6 +1,4 @@
-// Copyright (c) 2011 The MyDB Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file. See the AUTHORS file for names of contributors.
+
 //
 // The representation of a DBImpl consists of a set of Versions.  The
 // newest version is called "current".  Older versions may be kept
