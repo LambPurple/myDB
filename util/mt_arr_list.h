@@ -1,24 +1,24 @@
 /* Copyright (c) IAIK, Graz University of Technology, 2015.
  * All rights reserved.
  * Contact: http://opensource.iaik.tugraz.at
- * 
+ *
  * This file is part of the Merkle Tree Library.
- * 
+ *
  * Commercial License Usage
  * Licensees holding valid commercial licenses may use this file in
  * accordance with the commercial license agreement provided with the
  * Software or, alternatively, in accordance with the terms contained in
  * a written agreement between you and SIC. For further information
  * contact us at http://opensource.iaik.tugraz.at.
- * 
+ *
  * Alternatively, this file may be used under the terms of the GNU General
  * Public License as published by the Free Software Foundation version 2.
- * 
+ *
  * The Merkle Tree Library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
  * Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with the Merkle Tree Library. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -52,8 +52,9 @@
  * allocated.
  */
 typedef struct merkle_tree_array_list {
-  uint32_t elems; /*!< number of elements in the list */
-  uint8_t *store; /*!< pointer to the address of the first element in the list */
+    uint32_t elems; /*!< number of elements in the list */
+    uint8_t*
+        store; /*!< pointer to the address of the first element in the list */
 } mt_al_t;
 
 /*!
@@ -61,14 +62,14 @@ typedef struct merkle_tree_array_list {
  *
  * @return a pointer to the freshly created Merkle Tree array list instance.
  */
-mt_al_t *mt_al_create(void);
+mt_al_t* mt_al_create(void);
 
 /*!
  * \brief Deletes an existing Merkle Tree array list instance.
  *
  * @param[in] mt_al
  */
-void mt_al_delete(mt_al_t *mt_al);
+void mt_al_delete(mt_al_t* mt_al);
 
 /*!
  * \brief Adds a new element to the list.
@@ -82,7 +83,7 @@ void mt_al_delete(mt_al_t *mt_al);
  *         MT_ERR_ILLEGAL_STATE if an integer overflow in the allocation code
  *         occurs.
  */
-mt_error_t mt_al_add(mt_al_t *mt_al, const mt_hash_t hash);
+mt_error_t mt_al_add(mt_al_t* mt_al, const mt_hash_t hash);
 
 /*!
  * \brief Update a specific element with the given new hash value
@@ -94,8 +95,8 @@ mt_error_t mt_al_add(mt_al_t *mt_al, const mt_hash_t hash);
  *         MT_ERR_ILLEGAL_PARAM if any of the incoming parameters is null, or
  *         the offset is out of bounds.
  */
-mt_error_t mt_al_update(const mt_al_t *mt_al, const mt_hash_t hash,
-    const uint32_t offset);
+mt_error_t mt_al_update(const mt_al_t* mt_al, const mt_hash_t hash,
+                        const uint32_t offset);
 
 /*!
  * \brief Update a specific element with the given new hash value, but only
@@ -108,8 +109,8 @@ mt_error_t mt_al_update(const mt_al_t *mt_al, const mt_hash_t hash,
  *         does not yet exist;
  *         MT_ERR_ILLEGAL_PARAM if any of the incoming parameters is null.
  */
-mt_error_t mt_al_update_if_exists(const mt_al_t *mt_al, const mt_hash_t hash,
-    const uint32_t offset);
+mt_error_t mt_al_update_if_exists(const mt_al_t* mt_al, const mt_hash_t hash,
+                                  const uint32_t offset);
 
 /*!
  * \brief Either updates the last element in the list, or adds a new element
@@ -131,8 +132,8 @@ mt_error_t mt_al_update_if_exists(const mt_al_t *mt_al, const mt_hash_t hash,
  *         MT_ERR_ILLEGAL_STATE if an integer overflow in the allocation code
  *         occurs.
  */
-mt_error_t mt_al_add_or_update(mt_al_t *mt_al, const mt_hash_t hash,
-    const uint32_t offset);
+mt_error_t mt_al_add_or_update(mt_al_t* mt_al, const mt_hash_t hash,
+                               const uint32_t offset);
 
 /*!
  * \brief Truncates the list of hash values to the given number of elements.
@@ -145,7 +146,7 @@ mt_error_t mt_al_add_or_update(mt_al_t *mt_al, const mt_hash_t hash,
  *         MT_ERR_OUT_OF_MEMORY if reducing the amount of allocated memory
  *         fails.
  */
-mt_error_t mt_al_truncate(mt_al_t *mt_al, const uint32_t elems);
+mt_error_t mt_al_truncate(mt_al_t* mt_al, const uint32_t elems);
 
 /*!
  * \brief Return a specific hash element from the array list.
@@ -157,7 +158,7 @@ mt_error_t mt_al_truncate(mt_al_t *mt_al, const uint32_t elems);
  * @param offset[in] the offset of the element to fetch
  * @return a pointer to the requested hash element in the array list
  */
-const uint8_t *mt_al_get(const mt_al_t *mt_al, const uint32_t offset);
+const uint8_t* mt_al_get(const mt_al_t* mt_al, const uint32_t offset);
 
 /*!
  * \brief Checks if the element at the given offset has a right neighbor.
@@ -169,12 +170,12 @@ const uint8_t *mt_al_get(const mt_al_t *mt_al, const uint32_t offset);
  * neighbor
  * @return true if the element at the given offset has a neighbor.
  */
-static inline uint32_t mt_al_has_right_neighbor(const mt_al_t *mt_al,
-    const uint32_t offset) {
-  if (!mt_al) {
-    return 0;
-  }
-  return (offset + 1) < mt_al->elems;
+static inline uint32_t mt_al_has_right_neighbor(const mt_al_t* mt_al,
+                                                const uint32_t offset) {
+    if (!mt_al) {
+        return 0;
+    }
+    return (offset + 1) < mt_al->elems;
 }
 
 /*!
@@ -185,11 +186,11 @@ static inline uint32_t mt_al_has_right_neighbor(const mt_al_t *mt_al,
  * @param mt_al[in] the Merkle Tree array list data type instance
  * @return the number of elements in the list
  */
-static inline uint32_t mt_al_get_size(const mt_al_t *mt_al) {
-  if (!mt_al) {
-    return 0;
-  }
-  return mt_al->elems;
+static inline uint32_t mt_al_get_size(const mt_al_t* mt_al) {
+    if (!mt_al) {
+        return 0;
+    }
+    return mt_al->elems;
 }
 
 /*!
@@ -201,7 +202,7 @@ static inline uint32_t mt_al_get_size(const mt_al_t *mt_al) {
  * @param buffer[in] the buffer to print
  * @param size[in] the size of the buffer
  */
-void mt_al_print_hex_buffer(const uint8_t *buffer, const size_t size);
+void mt_al_print_hex_buffer(const uint8_t* buffer, const size_t size);
 
 /*!
  * \brief Print a given buffer as hex formated string into a newly allocated
@@ -216,7 +217,7 @@ void mt_al_print_hex_buffer(const uint8_t *buffer, const size_t size);
  * @param size[in] the size of the buffer
  * @return a human readable hex string representation of the buffer
  */
-char *mt_al_sprint_hex_buffer(const uint8_t *buffer, const size_t size);
+char* mt_al_sprint_hex_buffer(const uint8_t* buffer, const size_t size);
 
 /*!
  * \brief Print the Merkle Tree array list of hashes.
@@ -226,6 +227,6 @@ char *mt_al_sprint_hex_buffer(const uint8_t *buffer, const size_t size);
  *
  * @param mt_al[in] the Merkle Tree array list data type instance
  */
-void mt_al_print(const mt_al_t *mt_al);
+void mt_al_print(const mt_al_t* mt_al);
 
 #endif /* MT_ARR_LIST_H_ */

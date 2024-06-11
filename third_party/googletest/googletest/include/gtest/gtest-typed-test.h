@@ -190,7 +190,7 @@ INSTANTIATE_TYPED_TEST_SUITE_P(My, FooTest, MyTypes);
   typedef ::testing::internal::GenerateTypeList<Types>::type            \
       GTEST_TYPE_PARAMS_(CaseName);                                     \
   typedef ::testing::internal::NameGeneratorSelector<__VA_ARGS__>::type \
-      GTEST_NAME_GENERATOR_(CaseName)
+  GTEST_NAME_GENERATOR_(CaseName)
 
 #define TYPED_TEST(CaseName, TestName)                                        \
   static_assert(sizeof(GTEST_STRINGIFY_(TestName)) > 1,                       \
@@ -256,7 +256,7 @@ INSTANTIATE_TYPED_TEST_SUITE_P(My, FooTest, MyTypes);
 // #included in multiple translation units linked together.
 #define TYPED_TEST_SUITE_P(SuiteName)              \
   static ::testing::internal::TypedTestSuitePState \
-      GTEST_TYPED_TEST_SUITE_P_STATE_(SuiteName)
+  GTEST_TYPED_TEST_SUITE_P_STATE_(SuiteName)
 
 // Legacy API is deprecated but still available
 #ifndef GTEST_REMOVE_LEGACY_TEST_CASEAPI_

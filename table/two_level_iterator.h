@@ -24,6 +24,6 @@ Iterator* NewTwoLevelIterator(
                                 const Slice& index_value),
     void* arg, const ReadOptions& options);
 
-}  // namespace mydb
+} // namespace mydb
 
-#endif  // STORAGE_MYDB_TABLE_TWO_LEVEL_ITERATOR_H_
+#endif // STORAGE_MYDB_TABLE_TWO_LEVEL_ITERATOR_H_

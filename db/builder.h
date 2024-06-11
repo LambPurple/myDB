@@ -23,6 +23,6 @@ class VersionEdit;
 Status BuildTable(const std::string& dbname, Env* env, const Options& options,
                   TableCache* table_cache, Iterator* iter, FileMetaData* meta);
 
-}  // namespace mydb
+} // namespace mydb
 
-#endif  // STORAGE_MYDB_DB_BUILDER_H_
+#endif // STORAGE_MYDB_DB_BUILDER_H_

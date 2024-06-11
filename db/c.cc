@@ -44,258 +44,254 @@ using mydb::WriteOptions;
 extern "C" {
 
 struct mydb_t {
-  DB* rep;
+    DB* rep;
 };
 struct mydb_iterator_t {
-  Iterator* rep;
+    Iterator* rep;
 };
 struct mydb_writebatch_t {
-  WriteBatch rep;
+    WriteBatch rep;
 };
 struct mydb_snapshot_t {
-  const Snapshot* rep;
+    const Snapshot* rep;
 };
 struct mydb_readoptions_t {
-  ReadOptions rep;
+    ReadOptions rep;
 };
 struct mydb_writeoptions_t {
-  WriteOptions rep;
+    WriteOptions rep;
 };
 struct mydb_options_t {
-  Options rep;
+    Options rep;
 };
 struct mydb_cache_t {
-  Cache* rep;
+    Cache* rep;
 };
 struct mydb_seqfile_t {
-  SequentialFile* rep;
+    SequentialFile* rep;
 };
 struct mydb_randomfile_t {
-  RandomAccessFile* rep;
+    RandomAccessFile* rep;
 };
 struct mydb_writablefile_t {
-  WritableFile* rep;
+    WritableFile* rep;
 };
 struct mydb_logger_t {
-  Logger* rep;
+    Logger* rep;
 };
 struct mydb_filelock_t {
-  FileLock* rep;
+    FileLock* rep;
 };
 
 struct mydb_comparator_t : public Comparator {
-  ~mydb_comparator_t() override { (*destructor_)(state_); }
+    ~mydb_comparator_t() override { (*destructor_)(state_); }
 
-  int Compare(const Slice& a, const Slice& b) const override {
-    return (*compare_)(state_, a.data(), a.size(), b.data(), b.size());
-  }
+    int Compare(const Slice& a, const Slice& b) const override {
+        return (*compare_)(state_, a.data(), a.size(), b.data(), b.size());
+    }
 
-  const char* Name() const override { return (*name_)(state_); }
+    const char* Name() const override { return (*name_)(state_); }
 
-  // No-ops since the C binding does not support key shortening methods.
-  void FindShortestSeparator(std::string*, const Slice&) const override {}
-  void FindShortSuccessor(std::string* key) const override {}
+    // No-ops since the C binding does not support key shortening methods.
+    void FindShortestSeparator(std::string*, const Slice&) const override {}
+    void FindShortSuccessor(std::string* key) const override {}
 
-  void* state_;
-  void (*destructor_)(void*);
-  int (*compare_)(void*, const char* a, size_t alen, const char* b,
-                  size_t blen);
-  const char* (*name_)(void*);
+    void* state_;
+    void (*destructor_)(void*);
+    int (*compare_)(void*, const char* a, size_t alen, const char* b,
+                    size_t blen);
+    const char* (*name_)(void*);
 };
 
 struct mydb_filterpolicy_t : public FilterPolicy {
-  ~mydb_filterpolicy_t() override { (*destructor_)(state_); }
+    ~mydb_filterpolicy_t() override { (*destructor_)(state_); }
 
-  const char* Name() const override { return (*name_)(state_); }
+    const char* Name() const override { return (*name_)(state_); }
 
-  void CreateFilter(const Slice* keys, int n, std::string* dst) const override {
-    std::vector<const char*> key_pointers(n);
-    std::vector<size_t> key_sizes(n);
-    for (int i = 0; i < n; i++) {
-      key_pointers[i] = keys[i].data();
-      key_sizes[i] = keys[i].size();
+    void CreateFilter(const Slice* keys, int n,
+                      std::string* dst) const override {
+        std::vector<const char*> key_pointers(n);
+        std::vector<size_t> key_sizes(n);
+        for (int i = 0; i < n; i++) {
+            key_pointers[i] = keys[i].data();
+            key_sizes[i] = keys[i].size();
+        }
+        size_t len;
+        char* filter =
+            (*create_)(state_, &key_pointers[0], &key_sizes[0], n, &len);
+        dst->append(filter, len);
+        std::free(filter);
     }
-    size_t len;
-    char* filter = (*create_)(state_, &key_pointers[0], &key_sizes[0], n, &len);
-    dst->append(filter, len);
-    std::free(filter);
-  }
 
-  bool KeyMayMatch(const Slice& key, const Slice& filter) const override {
-    return (*key_match_)(state_, key.data(), key.size(), filter.data(),
-                         filter.size());
-  }
+    bool KeyMayMatch(const Slice& key, const Slice& filter) const override {
+        return (*key_match_)(state_, key.data(), key.size(), filter.data(),
+                             filter.size());
+    }
 
-  void* state_;
-  void (*destructor_)(void*);
-  const char* (*name_)(void*);
-  char* (*create_)(void*, const char* const* key_array,
-                   const size_t* key_length_array, int num_keys,
-                   size_t* filter_length);
-  uint8_t (*key_match_)(void*, const char* key, size_t length,
-                        const char* filter, size_t filter_length);
+    void* state_;
+    void (*destructor_)(void*);
+    const char* (*name_)(void*);
+    char* (*create_)(void*, const char* const* key_array,
+                     const size_t* key_length_array, int num_keys,
+                     size_t* filter_length);
+    uint8_t (*key_match_)(void*, const char* key, size_t length,
+                          const char* filter, size_t filter_length);
 };
 
 struct mydb_env_t {
-  Env* rep;
-  bool is_default;
+    Env* rep;
+    bool is_default;
 };
 
 static bool SaveError(char** errptr, const Status& s) {
-  assert(errptr != nullptr);
-  if (s.ok()) {
-    return false;
-  } else if (*errptr == nullptr) {
-    *errptr = strdup(s.ToString().c_str());
-  } else {
-    // TODO(sanjay): Merge with existing error?
-    std::free(*errptr);
-    *errptr = strdup(s.ToString().c_str());
-  }
-  return true;
+    assert(errptr != nullptr);
+    if (s.ok()) {
+        return false;
+    } else if (*errptr == nullptr) {
+        *errptr = strdup(s.ToString().c_str());
+    } else {
+        // TODO(sanjay): Merge with existing error?
+        std::free(*errptr);
+        *errptr = strdup(s.ToString().c_str());
+    }
+    return true;
 }
 
 static char* CopyString(const std::string& str) {
-  char* result =
-      reinterpret_cast<char*>(std::malloc(sizeof(char) * str.size()));
-  std::memcpy(result, str.data(), sizeof(char) * str.size());
-  return result;
+    char* result =
+        reinterpret_cast<char*>(std::malloc(sizeof(char) * str.size()));
+    std::memcpy(result, str.data(), sizeof(char) * str.size());
+    return result;
 }
 
 mydb_t* mydb_open(const mydb_options_t* options, const char* name,
-                        char** errptr) {
-  DB* db;
-  if (SaveError(errptr, DB::Open(options->rep, std::string(name), &db))) {
-    return nullptr;
-  }
-  mydb_t* result = new mydb_t;
-  result->rep = db;
-  return result;
+                  char** errptr) {
+    DB* db;
+    if (SaveError(errptr, DB::Open(options->rep, std::string(name), &db))) {
+        return nullptr;
+    }
+    mydb_t* result = new mydb_t;
+    result->rep = db;
+    return result;
 }
 
 void mydb_close(mydb_t* db) {
-  delete db->rep;
-  delete db;
+    delete db->rep;
+    delete db;
 }
 
-void mydb_put(mydb_t* db, const mydb_writeoptions_t* options,
-                 const char* key, size_t keylen, const char* val, size_t vallen,
-                 char** errptr) {
-  SaveError(errptr,
-            db->rep->Put(options->rep, Slice(key, keylen), Slice(val, vallen)));
+void mydb_put(mydb_t* db, const mydb_writeoptions_t* options, const char* key,
+              size_t keylen, const char* val, size_t vallen, char** errptr) {
+    SaveError(errptr, db->rep->Put(options->rep, Slice(key, keylen),
+                                   Slice(val, vallen)));
 }
 
 void mydb_delete(mydb_t* db, const mydb_writeoptions_t* options,
-                    const char* key, size_t keylen, char** errptr) {
-  SaveError(errptr, db->rep->Delete(options->rep, Slice(key, keylen)));
+                 const char* key, size_t keylen, char** errptr) {
+    SaveError(errptr, db->rep->Delete(options->rep, Slice(key, keylen)));
 }
 
 void mydb_write(mydb_t* db, const mydb_writeoptions_t* options,
-                   mydb_writebatch_t* batch, char** errptr) {
-  SaveError(errptr, db->rep->Write(options->rep, &batch->rep));
+                mydb_writebatch_t* batch, char** errptr) {
+    SaveError(errptr, db->rep->Write(options->rep, &batch->rep));
 }
 
-char* mydb_get(mydb_t* db, const mydb_readoptions_t* options,
-                  const char* key, size_t keylen, size_t* vallen,
-                  char** errptr) {
-  char* result = nullptr;
-  std::string tmp;
-  Status s = db->rep->Get(options->rep, Slice(key, keylen), &tmp);
-  if (s.ok()) {
-    *vallen = tmp.size();
-    result = CopyString(tmp);
-  } else {
-    *vallen = 0;
-    if (!s.IsNotFound()) {
-      SaveError(errptr, s);
+char* mydb_get(mydb_t* db, const mydb_readoptions_t* options, const char* key,
+               size_t keylen, size_t* vallen, char** errptr) {
+    char* result = nullptr;
+    std::string tmp;
+    Status s = db->rep->Get(options->rep, Slice(key, keylen), &tmp);
+    if (s.ok()) {
+        *vallen = tmp.size();
+        result = CopyString(tmp);
+    } else {
+        *vallen = 0;
+        if (!s.IsNotFound()) {
+            SaveError(errptr, s);
+        }
     }
-  }
-  return result;
+    return result;
 }
 
-mydb_iterator_t* mydb_create_iterator(
-    mydb_t* db, const mydb_readoptions_t* options) {
-  mydb_iterator_t* result = new mydb_iterator_t;
-  result->rep = db->rep->NewIterator(options->rep);
-  return result;
+mydb_iterator_t* mydb_create_iterator(mydb_t* db,
+                                      const mydb_readoptions_t* options) {
+    mydb_iterator_t* result = new mydb_iterator_t;
+    result->rep = db->rep->NewIterator(options->rep);
+    return result;
 }
 
 const mydb_snapshot_t* mydb_create_snapshot(mydb_t* db) {
-  mydb_snapshot_t* result = new mydb_snapshot_t;
-  result->rep = db->rep->GetSnapshot();
-  return result;
+    mydb_snapshot_t* result = new mydb_snapshot_t;
+    result->rep = db->rep->GetSnapshot();
+    return result;
 }
 
-void mydb_release_snapshot(mydb_t* db,
-                              const mydb_snapshot_t* snapshot) {
-  db->rep->ReleaseSnapshot(snapshot->rep);
-  delete snapshot;
+void mydb_release_snapshot(mydb_t* db, const mydb_snapshot_t* snapshot) {
+    db->rep->ReleaseSnapshot(snapshot->rep);
+    delete snapshot;
 }
 
 char* mydb_property_value(mydb_t* db, const char* propname) {
-  std::string tmp;
-  if (db->rep->GetProperty(Slice(propname), &tmp)) {
-    // We use strdup() since we expect human readable output.
-    return strdup(tmp.c_str());
-  } else {
-    return nullptr;
-  }
+    std::string tmp;
+    if (db->rep->GetProperty(Slice(propname), &tmp)) {
+        // We use strdup() since we expect human readable output.
+        return strdup(tmp.c_str());
+    } else {
+        return nullptr;
+    }
 }
 
 void mydb_approximate_sizes(mydb_t* db, int num_ranges,
-                               const char* const* range_start_key,
-                               const size_t* range_start_key_len,
-                               const char* const* range_limit_key,
-                               const size_t* range_limit_key_len,
-                               uint64_t* sizes) {
-  Range* ranges = new Range[num_ranges];
-  for (int i = 0; i < num_ranges; i++) {
-    ranges[i].start = Slice(range_start_key[i], range_start_key_len[i]);
-    ranges[i].limit = Slice(range_limit_key[i], range_limit_key_len[i]);
-  }
-  db->rep->GetApproximateSizes(ranges, num_ranges, sizes);
-  delete[] ranges;
+                            const char* const* range_start_key,
+                            const size_t* range_start_key_len,
+                            const char* const* range_limit_key,
+                            const size_t* range_limit_key_len,
+                            uint64_t* sizes) {
+    Range* ranges = new Range[num_ranges];
+    for (int i = 0; i < num_ranges; i++) {
+        ranges[i].start = Slice(range_start_key[i], range_start_key_len[i]);
+        ranges[i].limit = Slice(range_limit_key[i], range_limit_key_len[i]);
+    }
+    db->rep->GetApproximateSizes(ranges, num_ranges, sizes);
+    delete[] ranges;
 }
 
-void mydb_compact_range(mydb_t* db, const char* start_key,
-                           size_t start_key_len, const char* limit_key,
-                           size_t limit_key_len) {
-  Slice a, b;
-  db->rep->CompactRange(
-      // Pass null Slice if corresponding "const char*" is null
-      (start_key ? (a = Slice(start_key, start_key_len), &a) : nullptr),
-      (limit_key ? (b = Slice(limit_key, limit_key_len), &b) : nullptr));
+void mydb_compact_range(mydb_t* db, const char* start_key, size_t start_key_len,
+                        const char* limit_key, size_t limit_key_len) {
+    Slice a, b;
+    db->rep->CompactRange(
+        // Pass null Slice if corresponding "const char*" is null
+        (start_key ? (a = Slice(start_key, start_key_len), &a) : nullptr),
+        (limit_key ? (b = Slice(limit_key, limit_key_len), &b) : nullptr));
 }
 
 void mydb_destroy_db(const mydb_options_t* options, const char* name,
-                        char** errptr) {
-  SaveError(errptr, DestroyDB(name, options->rep));
+                     char** errptr) {
+    SaveError(errptr, DestroyDB(name, options->rep));
 }
 
 void mydb_repair_db(const mydb_options_t* options, const char* name,
-                       char** errptr) {
-  SaveError(errptr, RepairDB(name, options->rep));
+                    char** errptr) {
+    SaveError(errptr, RepairDB(name, options->rep));
 }
 
 void mydb_iter_destroy(mydb_iterator_t* iter) {
-  delete iter->rep;
-  delete iter;
+    delete iter->rep;
+    delete iter;
 }
 
 uint8_t mydb_iter_valid(const mydb_iterator_t* iter) {
-  return iter->rep->Valid();
+    return iter->rep->Valid();
 }
 
 void mydb_iter_seek_to_first(mydb_iterator_t* iter) {
-  iter->rep->SeekToFirst();
+    iter->rep->SeekToFirst();
 }
 
-void mydb_iter_seek_to_last(mydb_iterator_t* iter) {
-  iter->rep->SeekToLast();
-}
+void mydb_iter_seek_to_last(mydb_iterator_t* iter) { iter->rep->SeekToLast(); }
 
 void mydb_iter_seek(mydb_iterator_t* iter, const char* k, size_t klen) {
-  iter->rep->Seek(Slice(k, klen));
+    iter->rep->Seek(Slice(k, klen));
 }
 
 void mydb_iter_next(mydb_iterator_t* iter) { iter->rep->Next(); }
@@ -303,141 +299,139 @@ void mydb_iter_next(mydb_iterator_t* iter) { iter->rep->Next(); }
 void mydb_iter_prev(mydb_iterator_t* iter) { iter->rep->Prev(); }
 
 const char* mydb_iter_key(const mydb_iterator_t* iter, size_t* klen) {
-  Slice s = iter->rep->key();
-  *klen = s.size();
-  return s.data();
+    Slice s = iter->rep->key();
+    *klen = s.size();
+    return s.data();
 }
 
 const char* mydb_iter_value(const mydb_iterator_t* iter, size_t* vlen) {
-  Slice s = iter->rep->value();
-  *vlen = s.size();
-  return s.data();
+    Slice s = iter->rep->value();
+    *vlen = s.size();
+    return s.data();
 }
 
 void mydb_iter_get_error(const mydb_iterator_t* iter, char** errptr) {
-  SaveError(errptr, iter->rep->status());
+    SaveError(errptr, iter->rep->status());
 }
 
-mydb_writebatch_t* mydb_writebatch_create() {
-  return new mydb_writebatch_t;
-}
+mydb_writebatch_t* mydb_writebatch_create() { return new mydb_writebatch_t; }
 
 void mydb_writebatch_destroy(mydb_writebatch_t* b) { delete b; }
 
 void mydb_writebatch_clear(mydb_writebatch_t* b) { b->rep.Clear(); }
 
-void mydb_writebatch_put(mydb_writebatch_t* b, const char* key,
-                            size_t klen, const char* val, size_t vlen) {
-  b->rep.Put(Slice(key, klen), Slice(val, vlen));
+void mydb_writebatch_put(mydb_writebatch_t* b, const char* key, size_t klen,
+                         const char* val, size_t vlen) {
+    b->rep.Put(Slice(key, klen), Slice(val, vlen));
 }
 
 void mydb_writebatch_delete(mydb_writebatch_t* b, const char* key,
-                               size_t klen) {
-  b->rep.Delete(Slice(key, klen));
+                            size_t klen) {
+    b->rep.Delete(Slice(key, klen));
 }
 
 void mydb_writebatch_iterate(const mydb_writebatch_t* b, void* state,
-                                void (*put)(void*, const char* k, size_t klen,
-                                            const char* v, size_t vlen),
-                                void (*deleted)(void*, const char* k,
-                                                size_t klen)) {
-  class H : public WriteBatch::Handler {
-   public:
-    void* state_;
-    void (*put_)(void*, const char* k, size_t klen, const char* v, size_t vlen);
-    void (*deleted_)(void*, const char* k, size_t klen);
-    void Put(const Slice& key, const Slice& value) override {
-      (*put_)(state_, key.data(), key.size(), value.data(), value.size());
-    }
-    void Delete(const Slice& key) override {
-      (*deleted_)(state_, key.data(), key.size());
-    }
-  };
-  H handler;
-  handler.state_ = state;
-  handler.put_ = put;
-  handler.deleted_ = deleted;
-  b->rep.Iterate(&handler);
+                             void (*put)(void*, const char* k, size_t klen,
+                                         const char* v, size_t vlen),
+                             void (*deleted)(void*, const char* k,
+                                             size_t klen)) {
+    class H : public WriteBatch::Handler {
+      public:
+        void* state_;
+        void (*put_)(void*, const char* k, size_t klen, const char* v,
+                     size_t vlen);
+        void (*deleted_)(void*, const char* k, size_t klen);
+        void Put(const Slice& key, const Slice& value) override {
+            (*put_)(state_, key.data(), key.size(), value.data(), value.size());
+        }
+        void Delete(const Slice& key) override {
+            (*deleted_)(state_, key.data(), key.size());
+        }
+    };
+    H handler;
+    handler.state_ = state;
+    handler.put_ = put;
+    handler.deleted_ = deleted;
+    b->rep.Iterate(&handler);
 }
 
 void mydb_writebatch_append(mydb_writebatch_t* destination,
-                               const mydb_writebatch_t* source) {
-  destination->rep.Append(source->rep);
+                            const mydb_writebatch_t* source) {
+    destination->rep.Append(source->rep);
 }
 
 mydb_options_t* mydb_options_create() { return new mydb_options_t; }
 
 void mydb_options_destroy(mydb_options_t* options) { delete options; }
 
-void mydb_options_set_comparator(mydb_options_t* opt,
-                                    mydb_comparator_t* cmp) {
-  opt->rep.comparator = cmp;
+void mydb_options_set_comparator(mydb_options_t* opt, mydb_comparator_t* cmp) {
+    opt->rep.comparator = cmp;
 }
 
 void mydb_options_set_filter_policy(mydb_options_t* opt,
-                                       mydb_filterpolicy_t* policy) {
-  opt->rep.filter_policy = policy;
+                                    mydb_filterpolicy_t* policy) {
+    opt->rep.filter_policy = policy;
 }
 
 void mydb_options_set_create_if_missing(mydb_options_t* opt, uint8_t v) {
-  opt->rep.create_if_missing = v;
+    opt->rep.create_if_missing = v;
 }
 
 void mydb_options_set_error_if_exists(mydb_options_t* opt, uint8_t v) {
-  opt->rep.error_if_exists = v;
+    opt->rep.error_if_exists = v;
 }
 
 void mydb_options_set_paranoid_checks(mydb_options_t* opt, uint8_t v) {
-  opt->rep.paranoid_checks = v;
+    opt->rep.paranoid_checks = v;
 }
 
 void mydb_options_set_env(mydb_options_t* opt, mydb_env_t* env) {
-  opt->rep.env = (env ? env->rep : nullptr);
+    opt->rep.env = (env ? env->rep : nullptr);
 }
 
 void mydb_options_set_info_log(mydb_options_t* opt, mydb_logger_t* l) {
-  opt->rep.info_log = (l ? l->rep : nullptr);
+    opt->rep.info_log = (l ? l->rep : nullptr);
 }
 
 void mydb_options_set_write_buffer_size(mydb_options_t* opt, size_t s) {
-  opt->rep.write_buffer_size = s;
+    opt->rep.write_buffer_size = s;
 }
 
 void mydb_options_set_max_open_files(mydb_options_t* opt, int n) {
-  opt->rep.max_open_files = n;
+    opt->rep.max_open_files = n;
 }
 
 void mydb_options_set_cache(mydb_options_t* opt, mydb_cache_t* c) {
-  opt->rep.block_cache = c->rep;
+    opt->rep.block_cache = c->rep;
 }
 
 void mydb_options_set_block_size(mydb_options_t* opt, size_t s) {
-  opt->rep.block_size = s;
+    opt->rep.block_size = s;
 }
 
 void mydb_options_set_block_restart_interval(mydb_options_t* opt, int n) {
-  opt->rep.block_restart_interval = n;
+    opt->rep.block_restart_interval = n;
 }
 
 void mydb_options_set_max_file_size(mydb_options_t* opt, size_t s) {
-  opt->rep.max_file_size = s;
+    opt->rep.max_file_size = s;
 }
 
 void mydb_options_set_compression(mydb_options_t* opt, int t) {
-  opt->rep.compression = static_cast<CompressionType>(t);
+    opt->rep.compression = static_cast<CompressionType>(t);
 }
 
-mydb_comparator_t* mydb_comparator_create(
-    void* state, void (*destructor)(void*),
-    int (*compare)(void*, const char* a, size_t alen, const char* b,
-                   size_t blen),
-    const char* (*name)(void*)) {
-  mydb_comparator_t* result = new mydb_comparator_t;
-  result->state_ = state;
-  result->destructor_ = destructor;
-  result->compare_ = compare;
-  result->name_ = name;
-  return result;
+mydb_comparator_t*
+mydb_comparator_create(void* state, void (*destructor)(void*),
+                       int (*compare)(void*, const char* a, size_t alen,
+                                      const char* b, size_t blen),
+                       const char* (*name)(void*)) {
+    mydb_comparator_t* result = new mydb_comparator_t;
+    result->state_ = state;
+    result->destructor_ = destructor;
+    result->compare_ = compare;
+    result->name_ = name;
+    return result;
 }
 
 void mydb_comparator_destroy(mydb_comparator_t* cmp) { delete cmp; }
@@ -450,107 +444,103 @@ mydb_filterpolicy_t* mydb_filterpolicy_create(
     uint8_t (*key_may_match)(void*, const char* key, size_t length,
                              const char* filter, size_t filter_length),
     const char* (*name)(void*)) {
-  mydb_filterpolicy_t* result = new mydb_filterpolicy_t;
-  result->state_ = state;
-  result->destructor_ = destructor;
-  result->create_ = create_filter;
-  result->key_match_ = key_may_match;
-  result->name_ = name;
-  return result;
+    mydb_filterpolicy_t* result = new mydb_filterpolicy_t;
+    result->state_ = state;
+    result->destructor_ = destructor;
+    result->create_ = create_filter;
+    result->key_match_ = key_may_match;
+    result->name_ = name;
+    return result;
 }
 
-void mydb_filterpolicy_destroy(mydb_filterpolicy_t* filter) {
-  delete filter;
-}
+void mydb_filterpolicy_destroy(mydb_filterpolicy_t* filter) { delete filter; }
 
 mydb_filterpolicy_t* mydb_filterpolicy_create_bloom(int bits_per_key) {
-  // Make a mydb_filterpolicy_t, but override all of its methods so
-  // they delegate to a NewBloomFilterPolicy() instead of user
-  // supplied C functions.
-  struct Wrapper : public mydb_filterpolicy_t {
-    static void DoNothing(void*) {}
+    // Make a mydb_filterpolicy_t, but override all of its methods so
+    // they delegate to a NewBloomFilterPolicy() instead of user
+    // supplied C functions.
+    struct Wrapper : public mydb_filterpolicy_t {
+        static void DoNothing(void*) {}
 
-    ~Wrapper() { delete rep_; }
-    const char* Name() const { return rep_->Name(); }
-    void CreateFilter(const Slice* keys, int n, std::string* dst) const {
-      return rep_->CreateFilter(keys, n, dst);
-    }
-    bool KeyMayMatch(const Slice& key, const Slice& filter) const {
-      return rep_->KeyMayMatch(key, filter);
-    }
+        ~Wrapper() { delete rep_; }
+        const char* Name() const { return rep_->Name(); }
+        void CreateFilter(const Slice* keys, int n, std::string* dst) const {
+            return rep_->CreateFilter(keys, n, dst);
+        }
+        bool KeyMayMatch(const Slice& key, const Slice& filter) const {
+            return rep_->KeyMayMatch(key, filter);
+        }
 
-    const FilterPolicy* rep_;
-  };
-  Wrapper* wrapper = new Wrapper;
-  wrapper->rep_ = NewBloomFilterPolicy(bits_per_key);
-  wrapper->state_ = nullptr;
-  wrapper->destructor_ = &Wrapper::DoNothing;
-  return wrapper;
+        const FilterPolicy* rep_;
+    };
+    Wrapper* wrapper = new Wrapper;
+    wrapper->rep_ = NewBloomFilterPolicy(bits_per_key);
+    wrapper->state_ = nullptr;
+    wrapper->destructor_ = &Wrapper::DoNothing;
+    return wrapper;
 }
 
-mydb_readoptions_t* mydb_readoptions_create() {
-  return new mydb_readoptions_t;
-}
+mydb_readoptions_t* mydb_readoptions_create() { return new mydb_readoptions_t; }
 
 void mydb_readoptions_destroy(mydb_readoptions_t* opt) { delete opt; }
 
-void mydb_readoptions_set_verify_checksums(mydb_readoptions_t* opt,
-                                              uint8_t v) {
-  opt->rep.verify_checksums = v;
+void mydb_readoptions_set_verify_checksums(mydb_readoptions_t* opt, uint8_t v) {
+    opt->rep.verify_checksums = v;
 }
 
 void mydb_readoptions_set_fill_cache(mydb_readoptions_t* opt, uint8_t v) {
-  opt->rep.fill_cache = v;
+    opt->rep.fill_cache = v;
 }
 
 void mydb_readoptions_set_snapshot(mydb_readoptions_t* opt,
-                                      const mydb_snapshot_t* snap) {
-  opt->rep.snapshot = (snap ? snap->rep : nullptr);
+                                   const mydb_snapshot_t* snap) {
+    opt->rep.snapshot = (snap ? snap->rep : nullptr);
 }
 
 mydb_writeoptions_t* mydb_writeoptions_create() {
-  return new mydb_writeoptions_t;
+    return new mydb_writeoptions_t;
 }
 
 void mydb_writeoptions_destroy(mydb_writeoptions_t* opt) { delete opt; }
 
 void mydb_writeoptions_set_sync(mydb_writeoptions_t* opt, uint8_t v) {
-  opt->rep.sync = v;
+    opt->rep.sync = v;
 }
 
 mydb_cache_t* mydb_cache_create_lru(size_t capacity) {
-  mydb_cache_t* c = new mydb_cache_t;
-  c->rep = NewLRUCache(capacity);
-  return c;
+    mydb_cache_t* c = new mydb_cache_t;
+    c->rep = NewLRUCache(capacity);
+    return c;
 }
 
 void mydb_cache_destroy(mydb_cache_t* cache) {
-  delete cache->rep;
-  delete cache;
+    delete cache->rep;
+    delete cache;
 }
 
 mydb_env_t* mydb_create_default_env() {
-  mydb_env_t* result = new mydb_env_t;
-  result->rep = Env::Default();
-  result->is_default = true;
-  return result;
+    mydb_env_t* result = new mydb_env_t;
+    result->rep = Env::Default();
+    result->is_default = true;
+    return result;
 }
 
 void mydb_env_destroy(mydb_env_t* env) {
-  if (!env->is_default) delete env->rep;
-  delete env;
+    if (!env->is_default)
+        delete env->rep;
+    delete env;
 }
 
 char* mydb_env_get_test_directory(mydb_env_t* env) {
-  std::string result;
-  if (!env->rep->GetTestDirectory(&result).ok()) {
-    return nullptr;
-  }
+    std::string result;
+    if (!env->rep->GetTestDirectory(&result).ok()) {
+        return nullptr;
+    }
 
-  char* buffer = static_cast<char*>(std::malloc(result.size() + 1));
-  std::memcpy(buffer, result.data(), result.size());
-  buffer[result.size()] = '\0';
-  return buffer;
+    char* buffer = static_cast<char*>(std::malloc(result.size() + 1));
+    std::memcpy(buffer, result.data(), result.size());
+    buffer[result.size()] = '\0';
+    return buffer;
 }
 
 void mydb_free(void* ptr) { std::free(ptr); }
@@ -559,4 +549,4 @@ int mydb_major_version() { return kMajorVersion; }
 
 int mydb_minor_version() { return kMinorVersion; }
 
-}  // end extern "C"
+} // end extern "C"

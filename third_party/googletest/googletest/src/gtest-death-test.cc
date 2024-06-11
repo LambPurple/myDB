@@ -509,11 +509,9 @@ void DeathTestImpl::Abort(AbortReason reason) {
   // The parent process considers the death test to be a failure if
   // it finds any data in our pipe.  So, here we write a single flag byte
   // to the pipe, then exit.
-  const char status_ch = reason == TEST_DID_NOT_DIE
-                             ? kDeathTestLived
-                             : reason == TEST_THREW_EXCEPTION
-                                   ? kDeathTestThrew
-                                   : kDeathTestReturned;
+  const char status_ch = reason == TEST_DID_NOT_DIE       ? kDeathTestLived
+                         : reason == TEST_THREW_EXCEPTION ? kDeathTestThrew
+                                                          : kDeathTestReturned;
 
   GTEST_DEATH_TEST_CHECK_SYSCALL_(posix::Write(write_fd(), &status_ch, 1));
   // We are leaking the descriptor here because on some platforms (i.e.,

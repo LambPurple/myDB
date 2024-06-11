@@ -605,7 +605,7 @@ class Counter {
   Counter(double v = 0., Flags f = kDefaults, OneK k = kIs1000)
       : value(v), flags(f), oneK(k) {}
 
-  BENCHMARK_ALWAYS_INLINE operator double const &() const { return value; }
+  BENCHMARK_ALWAYS_INLINE operator double const&() const { return value; }
   BENCHMARK_ALWAYS_INLINE operator double&() { return value; }
 };
 
@@ -678,9 +678,11 @@ enum Skipped
 #if defined(BENCHMARK_HAS_CXX11)
     : unsigned
 #endif
-{ NotSkipped = 0,
+{
+  NotSkipped = 0,
   SkippedWithMessage,
-  SkippedWithError };
+  SkippedWithError
+};
 
 }  // namespace internal
 

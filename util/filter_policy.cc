@@ -8,4 +8,4 @@ namespace mydb {
 
 FilterPolicy::~FilterPolicy() {}
 
-}  // namespace mydb
+} // namespace mydb

@@ -15,6 +15,6 @@ class Env;
 // *base_env must remain live while the result is in use.
 MYDB_EXPORT Env* NewMemEnv(Env* base_env);
 
-}  // namespace mydb
+} // namespace mydb
 
-#endif  // STORAGE_MYDB_HELPERS_MEMENV_MEMENV_H_
+#endif // STORAGE_MYDB_HELPERS_MEMENV_MEMENV_H_

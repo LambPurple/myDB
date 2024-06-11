@@ -673,8 +673,8 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
 // matches the selected implementation. See
 // https://sourceforge.net/p/mingw-w64/wiki2/gnu%20printf/.
 #define GTEST_ATTRIBUTE_PRINTF_(string_index, first_to_check) \
-  __attribute__(                                              \
-      (__format__(__MINGW_PRINTF_FORMAT, string_index, first_to_check)))
+  __attribute__((                                             \
+      __format__(__MINGW_PRINTF_FORMAT, string_index, first_to_check)))
 #else
 #define GTEST_ATTRIBUTE_PRINTF_(string_index, first_to_check) \
   __attribute__((__format__(__printf__, string_index, first_to_check)))
@@ -2102,9 +2102,7 @@ GTEST_DISABLE_MSC_DEPRECATED_POP_()
 // imitation of standard behaviour.
 [[noreturn]] void Abort();
 #else
-[[noreturn]] inline void Abort() {
-  abort();
-}
+[[noreturn]] inline void Abort() { abort(); }
 #endif  // GTEST_OS_WINDOWS_MOBILE
 
 }  // namespace posix
@@ -2361,7 +2359,8 @@ template <typename... T>
 using Variant = ::std::variant<T...>;
 }  // namespace internal
 }  // namespace testing
-   // The case where absl is configured NOT to alias std::variant is not supported.
+   // The case where absl is configured NOT to alias std::variant is not
+   // supported.
 #endif  // __has_include(<variant>) && __cplusplus >= 201703L
 #endif  // __has_include
 #endif  // GTEST_HAS_ABSL

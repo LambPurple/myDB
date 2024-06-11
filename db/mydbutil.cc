@@ -12,53 +12,53 @@ namespace mydb {
 namespace {
 
 class StdoutPrinter : public WritableFile {
- public:
-  Status Append(const Slice& data) override {
-    fwrite(data.data(), 1, data.size(), stdout);
-    return Status::OK();
-  }
-  Status Close() override { return Status::OK(); }
-  Status Flush() override { return Status::OK(); }
-  Status Sync() override { return Status::OK(); }
+  public:
+    Status Append(const Slice& data) override {
+        fwrite(data.data(), 1, data.size(), stdout);
+        return Status::OK();
+    }
+    Status Close() override { return Status::OK(); }
+    Status Flush() override { return Status::OK(); }
+    Status Sync() override { return Status::OK(); }
 };
 
 bool HandleDumpCommand(Env* env, char** files, int num) {
-  StdoutPrinter printer;
-  bool ok = true;
-  for (int i = 0; i < num; i++) {
-    Status s = DumpFile(env, files[i], &printer);
-    if (!s.ok()) {
-      std::fprintf(stderr, "%s\n", s.ToString().c_str());
-      ok = false;
+    StdoutPrinter printer;
+    bool ok = true;
+    for (int i = 0; i < num; i++) {
+        Status s = DumpFile(env, files[i], &printer);
+        if (!s.ok()) {
+            std::fprintf(stderr, "%s\n", s.ToString().c_str());
+            ok = false;
+        }
     }
-  }
-  return ok;
+    return ok;
 }
 
-}  // namespace
-}  // namespace mydb
+} // namespace
+} // namespace mydb
 
 static void Usage() {
-  std::fprintf(
-      stderr,
-      "Usage: mydbutil command...\n"
-      "   dump files...         -- dump contents of specified files\n");
+    std::fprintf(
+        stderr,
+        "Usage: mydbutil command...\n"
+        "   dump files...         -- dump contents of specified files\n");
 }
 
 int main(int argc, char** argv) {
-  mydb::Env* env = mydb::Env::Default();
-  bool ok = true;
-  if (argc < 2) {
-    Usage();
-    ok = false;
-  } else {
-    std::string command = argv[1];
-    if (command == "dump") {
-      ok = mydb::HandleDumpCommand(env, argv + 2, argc - 2);
+    mydb::Env* env = mydb::Env::Default();
+    bool ok = true;
+    if (argc < 2) {
+        Usage();
+        ok = false;
     } else {
-      Usage();
-      ok = false;
+        std::string command = argv[1];
+        if (command == "dump") {
+            ok = mydb::HandleDumpCommand(env, argv + 2, argc - 2);
+        } else {
+            Usage();
+            ok = false;
+        }
     }
-  }
-  return (ok ? 0 : 1);
+    return (ok ? 0 : 1);
 }

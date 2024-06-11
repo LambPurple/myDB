@@ -195,10 +195,10 @@ void ExpectationBase::DescribeCallCountTo(::std::ostream* os) const
   // Describes the state of the expectation (e.g. is it satisfied?
   // is it active?).
   *os << " - "
-      << (IsOverSaturated()
-              ? "over-saturated"
-              : IsSaturated() ? "saturated"
-                              : IsSatisfied() ? "satisfied" : "unsatisfied")
+      << (IsOverSaturated() ? "over-saturated"
+          : IsSaturated()   ? "saturated"
+          : IsSatisfied()   ? "satisfied"
+                            : "unsatisfied")
       << " and " << (is_retired() ? "retired" : "active");
 }
 
@@ -397,11 +397,11 @@ UntypedActionResultHolderBase* UntypedFunctionMockerBase::UntypedInvokeWith(
                            // If the user wants this to be a warning, we print
                            // it only when they want to see warnings.
             reaction == kWarn
-                ? LogIsVisible(kWarning)
-                :
-                // Otherwise, the user wants this to be an error, and we
-                // should always print detailed information in the error.
-                true;
+            ? LogIsVisible(kWarning)
+            :
+            // Otherwise, the user wants this to be an error, and we
+            // should always print detailed information in the error.
+            true;
 
     if (!need_to_report_uninteresting_call) {
       // Perform the action without printing the call information.

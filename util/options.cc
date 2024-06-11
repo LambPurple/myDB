@@ -9,4 +9,4 @@ namespace mydb {
 
 Options::Options() : comparator(BytewiseComparator()), env(Env::Default()) {}
 
-}  // namespace mydb
+} // namespace mydb

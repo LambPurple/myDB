@@ -14,4 +14,4 @@
 #include "port/port_chromium.h"
 #endif
 
-#endif  // STORAGE_MYDB_PORT_PORT_H_
+#endif // STORAGE_MYDB_PORT_PORT_H_

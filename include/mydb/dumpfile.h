@@ -19,8 +19,8 @@ namespace mydb {
 // Returns a non-OK result if fname does not name a mydb storage
 // file, or if the file cannot be read.
 MYDB_EXPORT Status DumpFile(Env* env, const std::string& fname,
-                               WritableFile* dst);
+                            WritableFile* dst);
 
-}  // namespace mydb
+} // namespace mydb
 
-#endif  // STORAGE_MYDB_INCLUDE_DUMPFILE_H_
+#endif // STORAGE_MYDB_INCLUDE_DUMPFILE_H_

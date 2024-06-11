@@ -19,6 +19,6 @@ Iterator* NewDBIterator(DBImpl* db, const Comparator* user_key_comparator,
                         Iterator* internal_iter, SequenceNumber sequence,
                         uint32_t seed);
 
-}  // namespace mydb
+} // namespace mydb
 
-#endif  // STORAGE_MYDB_DB_DB_ITER_H_
+#endif // STORAGE_MYDB_DB_DB_ITER_H_

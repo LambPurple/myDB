@@ -18,13 +18,13 @@ namespace mydb {
 class Env;
 
 enum FileType {
-  kLogFile,
-  kDBLockFile,
-  kTableFile,
-  kDescriptorFile,
-  kCurrentFile,
-  kTempFile,
-  kInfoLogFile  // Either the current one, or an old one
+    kLogFile,
+    kDBLockFile,
+    kTableFile,
+    kDescriptorFile,
+    kCurrentFile,
+    kTempFile,
+    kInfoLogFile // Either the current one, or an old one
 };
 
 // Return the name of the log file with the specified number
@@ -77,6 +77,6 @@ bool ParseFileName(const std::string& filename, uint64_t* number,
 Status SetCurrentFile(Env* env, const std::string& dbname,
                       uint64_t descriptor_number);
 
-}  // namespace mydb
+} // namespace mydb
 
-#endif  // STORAGE_MYDB_DB_FILENAME_H_
+#endif // STORAGE_MYDB_DB_FILENAME_H_

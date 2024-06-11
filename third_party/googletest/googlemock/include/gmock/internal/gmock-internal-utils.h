@@ -403,17 +403,18 @@ struct RemoveConstFromKey<std::pair<const K, V> > {
 GTEST_API_ void IllegalDoDefault(const char* file, int line);
 
 template <typename F, typename Tuple, size_t... Idx>
-auto ApplyImpl(F&& f, Tuple&& args, IndexSequence<Idx...>) -> decltype(
-    std::forward<F>(f)(std::get<Idx>(std::forward<Tuple>(args))...)) {
+auto ApplyImpl(F&& f, Tuple&& args, IndexSequence<Idx...>)
+    -> decltype(std::forward<F>(f)(
+        std::get<Idx>(std::forward<Tuple>(args))...)) {
   return std::forward<F>(f)(std::get<Idx>(std::forward<Tuple>(args))...);
 }
 
 // Apply the function to a tuple of arguments.
 template <typename F, typename Tuple>
-auto Apply(F&& f, Tuple&& args) -> decltype(
-    ApplyImpl(std::forward<F>(f), std::forward<Tuple>(args),
-              MakeIndexSequence<std::tuple_size<
-                  typename std::remove_reference<Tuple>::type>::value>())) {
+auto Apply(F&& f, Tuple&& args) -> decltype(ApplyImpl(
+    std::forward<F>(f), std::forward<Tuple>(args),
+    MakeIndexSequence<std::tuple_size<
+        typename std::remove_reference<Tuple>::type>::value>())) {
   return ApplyImpl(std::forward<F>(f), std::forward<Tuple>(args),
                    MakeIndexSequence<std::tuple_size<
                        typename std::remove_reference<Tuple>::type>::value>());

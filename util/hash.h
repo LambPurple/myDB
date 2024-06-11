@@ -12,6 +12,6 @@ namespace mydb {
 
 uint32_t Hash(const char* data, size_t n, uint32_t seed);
 
-}  // namespace mydb
+} // namespace mydb
 
-#endif  // STORAGE_MYDB_UTIL_HASH_H_
+#endif // STORAGE_MYDB_UTIL_HASH_H_

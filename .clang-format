@@ -1,8 +1,16 @@
 # Run manually to reformat a file:
 # clang-format -i --style=file <file>
 # find . -iname '*.cc' -o -iname '*.h' -o -iname '*.h.in' | xargs clang-format -i --style=file
-BasedOnStyle: Google
+# We'll use defaults from the LLVM style, but with 4 columns indentation.
+BasedOnStyle: LLVM
+IndentWidth: 4
+---
+Language: Cpp
+# Force pointers to the type for C++.
 DerivePointerAlignment: false
+PointerAlignment: Left
+
+
 
 # Public headers are in a different location in the internal Google repository.
 # Order them so that when imported to the authoritative repository they will be

@@ -19,6 +19,6 @@ class Iterator;
 Iterator* NewMergingIterator(const Comparator* comparator, Iterator** children,
                              int n);
 
-}  // namespace mydb
+} // namespace mydb
 
-#endif  // STORAGE_MYDB_TABLE_MERGER_H_
+#endif // STORAGE_MYDB_TABLE_MERGER_H_

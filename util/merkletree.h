@@ -1,9 +1,9 @@
 #ifndef MERKLETREE_H_
 #define MERKLETREE_H_
 
+#include "util/mt_arr_list.h"
 #include "util/mt_config.h"
 #include "util/mt_err.h"
-#include "util/mt_arr_list.h"
 
 /*!
  * \brief defines the Merkle Tree data type
@@ -11,8 +11,8 @@
  * A Merkle Tree is used for ...
  */
 typedef struct merkle_tree {
-  uint32_t elems;
-  mt_al_t *level[TREE_LEVELS];
+    uint32_t elems;
+    mt_al_t* level[TREE_LEVELS];
 } mt_t;
 
 /*!
@@ -20,14 +20,14 @@ typedef struct merkle_tree {
  *
  * This function tries to create a new Merkle Tree data type for ...
  */
-mt_t *mt_create(void);
+mt_t* mt_create(void);
 /*!
  *
  * \brief deletes the specified Merkle Tree instance
  *
  * \param[in] mt a pointer to the Merkle Tree instance to delete
  */
-void mt_delete(mt_t *mt);
+void mt_delete(mt_t* mt);
 
 /*!
  *
@@ -40,7 +40,7 @@ void mt_delete(mt_t *mt);
  *         MT_ERR_ILLEGAL_STATE if an integer overflow in the allocation code
  *         occurs.
  */
-mt_error_t mt_add(mt_t *mt, const uint8_t *tag, const size_t len);
+mt_error_t mt_add(mt_t* mt, const uint8_t* tag, const size_t len);
 
 /*!
  * \brief returns the size of the lowest level of the Merkle Tree; in other
@@ -48,22 +48,23 @@ mt_error_t mt_add(mt_t *mt, const uint8_t *tag, const size_t len);
  * @param mt[in] the Merkle tree data type instance to get the size of
  * @return the number of blocks protected by the Merkle tree
  */
-uint32_t mt_get_size(const mt_t *mt);
+uint32_t mt_get_size(const mt_t* mt);
 
-int mt_exists(mt_t *mt, const uint32_t offset);
+int mt_exists(mt_t* mt, const uint32_t offset);
 
-mt_error_t mt_update(const mt_t *mt, const uint8_t *tag, const size_t len,
-    const uint32_t offset);
+mt_error_t mt_update(const mt_t* mt, const uint8_t* tag, const size_t len,
+                     const uint32_t offset);
 
-mt_error_t mt_verify(const mt_t *mt, const uint8_t *tag, const size_t len,
-    const uint32_t offset);
+mt_error_t mt_verify(const mt_t* mt, const uint8_t* tag, const size_t len,
+                     const uint32_t offset);
 
-mt_error_t mt_truncate(mt_t *mt, uint32_t last_valid);
+mt_error_t mt_truncate(mt_t* mt, uint32_t last_valid);
 
-mt_error_t mt_get_root(mt_t *mt, mt_hash_t root);
+mt_error_t mt_get_root(mt_t* mt, mt_hash_t root);
 
 /*!
- * \brief Prints a human readable representation of a hash in hexadecimal notation
+ * \brief Prints a human readable representation of a hash in hexadecimal
+ * notation
  *
  * @param hash the hash to print
  */
@@ -73,7 +74,6 @@ void mt_print_hash(const mt_hash_t hash);
  * Print a human readable representation of the Merkle Tree
  * @param mt a pointer to the Merkle Tree data type instance to print
  */
-void mt_print(const mt_t *mt);
-
+void mt_print(const mt_t* mt);
 
 #endif

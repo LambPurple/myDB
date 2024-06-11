@@ -1031,12 +1031,10 @@ GTEST_API_ ::std::string FormatCompilerIndependentFileLocation(const char* file,
 
 GTestLog::GTestLog(GTestLogSeverity severity, const char* file, int line)
     : severity_(severity) {
-  const char* const marker =
-      severity == GTEST_INFO
-          ? "[  INFO ]"
-          : severity == GTEST_WARNING
-                ? "[WARNING]"
-                : severity == GTEST_ERROR ? "[ ERROR ]" : "[ FATAL ]";
+  const char* const marker = severity == GTEST_INFO      ? "[  INFO ]"
+                             : severity == GTEST_WARNING ? "[WARNING]"
+                             : severity == GTEST_ERROR   ? "[ ERROR ]"
+                                                         : "[ FATAL ]";
   GetStream() << ::std::endl
               << marker << " " << FormatFileLocation(file, line).c_str()
               << ": ";
