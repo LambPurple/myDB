@@ -321,12 +321,7 @@ if(MYDB_BUILD_TESTS)
   add_executable(mydb_tests "")
   target_sources(mydb_tests
     PRIVATE
-      # "db/fault_injection_test.cc"
-      # "issues/issue178_test.cc"
-      # "issues/issue200_test.cc"
-      # "issues/issue320_test.cc"
       "${PROJECT_BINARY_DIR}/${MYDB_PORT_CONFIG_DIR}/port_config.h"
-      # "util/env_test.cc"
       "util/status_test.cc"
       "util/no_destructor_test.cc"
       "util/testutil.cc"
